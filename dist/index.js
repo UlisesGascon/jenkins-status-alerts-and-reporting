@@ -12244,32 +12244,37 @@ module.exports = {
 
 const core = __nccwpck_require__(2186)
 const ejs = __nccwpck_require__(8431)
-const { readFile } = (__nccwpck_require__(7147).promises)
+const { readFileSync } = __nccwpck_require__(7147)
 const { join } = __nccwpck_require__(1017)
+
+const issueTemplate = readFileSync(
+  __nccwpck_require__.ab + "issue.ejs",
+  'utf8'
+)
+const reportTemplate = readFileSync(
+  __nccwpck_require__.ab + "report.ejs",
+  'utf8'
+)
 
 const validateDatabaseIntegrity = () => {
   return true
 }
 
-const generateReportContent = async ({
+const generateReportContent = ({
   computers,
   jenkinsDomain,
   reportTagsEnabled
 }) => {
   core.debug('Generating report content')
-  const template = await readFile(
-    __nccwpck_require__.ab + "report.ejs",
-    'utf8'
-  )
-  return ejs.render(template, { computers, jenkinsDomain, reportTagsEnabled })
+  return ejs.render(reportTemplate, {
+    computers,
+    jenkinsDomain,
+    reportTagsEnabled
+  })
 }
 
-const generateIssueBodyContent = async (computer, jenkinsDomain) => {
-  const template = await readFile(
-    __nccwpck_require__.ab + "issue.ejs",
-    'utf8'
-  )
-  return ejs.render(template, { computer, jenkinsDomain })
+const generateIssueBodyContent = (computer, jenkinsDomain) => {
+  return ejs.render(issueTemplate, { computer, jenkinsDomain })
 }
 
 module.exports = {
@@ -12612,7 +12617,7 @@ async function run () {
       jenkinsData,
       database
     )
-    const reportContent = await generateReportContent({
+    const reportContent = generateReportContent({
       computers: reportData,
       jenkinsDomain,
       reportTagsEnabled
