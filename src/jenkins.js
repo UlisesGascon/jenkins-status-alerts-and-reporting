@@ -15,29 +15,30 @@ const generateReport = reportData => {
   return 'THIS IS A PLACE HOLDER'
 }
 
-const downloadCurrentState = async ({
+const downloadCurrentState = ({
   jenkinsUsername,
   jenkinsToken,
   jenkinsDomain
-}) => {
-  const jenkinsUrl = `https://${jenkinsUsername}:${jenkinsToken}@${jenkinsDomain}/computer/api/json?token=TOKEN`
+}) =>
+  new Promise((resolve, reject) => {
+    const jenkinsUrl = `https://${jenkinsUsername}:${jenkinsToken}@${jenkinsDomain}/computer/api/json?token=TOKEN`
 
-  https
-    .get(jenkinsUrl, resp => {
-      let data = ''
+    https
+      .get(jenkinsUrl, resp => {
+        let data = ''
 
-      // A chunk of data has been received.
-      resp.on('data', chunk => {
-        data += chunk
+        // A chunk of data has been received.
+        resp.on('data', chunk => {
+          data += chunk
+        })
+
+        // The whole response has been received. Print out the result.
+        resp.on('end', () => {
+          resolve(JSON.parse(data))
+        })
       })
-
-      // The whole response has been received. Print out the result.
-      resp.on('end', () => {
-        Promise.resolve(JSON.parse(data))
-      })
-    })
-    .on('error', Promise.reject)
-}
+      .on('error', reject)
+  })
 
 module.exports = {
   processJenkinsData,
