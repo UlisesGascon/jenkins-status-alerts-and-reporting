@@ -58,3 +58,8 @@ outputs:
 runs:
   using: 'node16'
   main: 'dist/index.js'
+
+# https://actions-cool.github.io/github-action-branding/
+branding:
+  icon: 'monitor'
+  color: 'green'
