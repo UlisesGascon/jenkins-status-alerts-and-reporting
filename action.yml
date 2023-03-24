@@ -1,0 +1,65 @@
+name: 'Jenkins status alerts and reporting'
+description: 'Create a Github Action that monitors the status of Jenkins and generates Markdown reports for your inventory. It also alerts you when the nodes are not functioning properly.'
+
+inputs:
+  jenkins-domain:
+    description: 'The domain name of your Jenkins server without the protocol or trailing slash'
+    required: true
+    default: 'jenkins.example.com'
+  jenkins-username:
+    description: 'The username of the Jenkins user'
+    required: true
+  jenkins-token:
+    description: 'The API token of the Jenkins user'
+    required: true
+  database:
+    description: 'File that stores the state of the Jenkins Nodes'
+    required: true
+  github-token:
+    description: 'Token to access the repository'
+    required: false
+  report-tags-enabled:
+    description: 'Enable the use of tags in the report'
+    required: false
+  report-start-tag:
+    description: 'Start tag to be used in the report'
+    required: false
+    default: '<!-- JENKINS-REPORTING:START -->'
+  report-end-tag:
+    description: 'End tag to be used in the report'
+    required: false
+    default: '<!-- JENKINS-REPORTING:END -->'
+  issue-assignees:
+    description: 'List of assignees for the issue to be generated'
+    required: false
+  issue-labels:
+    description: 'List of labels for the issue to be generated'
+    required: false
+  generate-issue:
+    description: 'Automatically generate an issue with the discrepancies'
+    required: false
+  report:
+    description: 'File that stores the report of Jekins nodes'
+    required: false
+  auto-commit:
+    description: 'Automatically commit the changes to the repository'
+    required: false
+  auto-push:
+    description: 'Automatically push the changes to the repository'
+    required: false
+  create-issues-for-new-offline-nodes:
+    description: 'Automatically generate an issue if the node is offline and has not been previously recorded in the database'
+    required: false
+    default: 'true'
+outputs:
+  computers:
+    description: 'The list of Jenkins computers with all the details'
+
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
+
+# https://actions-cool.github.io/github-action-branding/
+branding:
+  icon: 'monitor'
+  color: 'green'
