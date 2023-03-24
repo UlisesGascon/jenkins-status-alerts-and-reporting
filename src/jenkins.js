@@ -4,6 +4,30 @@ const processJenkinsData = (jenkinsData, database) => {
   const issuesData = []
   const newDatabaseState = {}
 
+  jenkinsData.computer.forEach(computer => {
+    const data = {
+      name: computer.displayName,
+      description: computer.description,
+      diskUsage:
+        computer.monitorData[
+          'org.jenkins.ci.plugins.percentagecolumn.PercentageDiskSpaceMonitor'
+        ].percentage,
+      architecture:
+        computer.monitorData['hudson.node_monitors.ArchitectureMonitor'],
+      jvmVersion: computer.monitorData['hudson.node_monitors.JvmMonitor'],
+      monitorVersion:
+        computer.monitorData['hudson.plugin.versioncolumn.VersionMonitor'],
+      isOffline: computer.offline,
+      isTemporarilyOffline: computer.temporarilyOffline,
+      isIdle: computer.idle
+    }
+
+    // @TODO: Deal with issues logic
+
+    newDatabaseState[computer.displayName] = data
+    reportData.push(data)
+  })
+
   return {
     reportData,
     issuesData,
