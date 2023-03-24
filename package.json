@@ -30,7 +30,8 @@
     "@ulisesgascon/is-different": "1.0.0",
     "@ulisesgascon/normalize-boolean": "1.0.0",
     "@ulisesgascon/text-tags-manager": "1.0.0",
-    "@vercel/ncc": "0.36.1"
+    "@vercel/ncc": "0.36.1",
+    "ejs": "3.1.9"
   },
   "engines": {
     "node": ">=16.0.0"
