@@ -1,5 +1,5 @@
 name: 'Jenkins status alerts and reporting'
-description: 'Create a Github Action that monitors the status of Jenkins and generates Markdown reports for your inventory. It also alerts you when the nodes are not functioning properly.'
+description: 'monitor Jenkins nodes and generate a markdown report for your inventory and alerts when nodes are offline'
 
 inputs:
   jenkins-domain:
