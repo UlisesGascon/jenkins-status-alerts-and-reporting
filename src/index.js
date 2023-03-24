@@ -150,11 +150,11 @@ async function run () {
         reportPath,
         reportTagsEnabled
           ? updateOrCreateSegment({
-              original: originalReportContent,
-              replacementSegment: reportContent,
-              startTag,
-              endTag
-            })
+            original: originalReportContent,
+            replacementSegment: reportContent,
+            startTag,
+            endTag
+          })
           : reportContent
       )
     }
