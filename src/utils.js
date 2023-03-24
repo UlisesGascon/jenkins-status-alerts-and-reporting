@@ -1,8 +1,11 @@
 const core = require('@actions/core')
+const Ajv = require('ajv')
 const ejs = require('ejs')
 const { readFileSync } = require('fs')
 const { join } = require('path')
 
+const ajv = new Ajv()
+const databaseSchema = require('../schemas/database.json')
 const issueTemplate = readFileSync(
   join(process.cwd(), 'templates/issue.ejs'),
   'utf8'
@@ -12,8 +15,13 @@ const reportTemplate = readFileSync(
   'utf8'
 )
 
-const validateDatabaseIntegrity = () => {
-  return true
+const validateDatabaseIntegrity = database => {
+  const valid = ajv.validate(databaseSchema, database)
+  if (!valid) {
+    throw new Error(
+      `Check: database file as the file is corrupted. Invalid data: ${ajv.errorsText()}`
+    )
+  }
 }
 
 const generateReportContent = ({

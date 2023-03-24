@@ -1,0 +1,49 @@
+{
+  "type": "object",
+  "patternProperties": {
+    "^[a-zA-Z0-9-_.]+/[a-zA-Z0-9-_.]+$": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "diskUsage": {
+          "type": ["number", "null"]
+        },
+        "architecture": {
+          "type": ["string", "null"]
+        },
+        "monitorVersion": {
+          "type": ["string", "null"]
+        },
+        "isOffline": {
+          "type": "boolean"
+        },
+        "isTemporarilyOffline": {
+          "type": "boolean"
+        },
+        "offlineCauseReason": {
+          "type": "string"
+        },
+        "isIdle": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "description",
+        "diskUsage",
+        "architecture",
+        "monitorVersion",
+        "isOffline",
+        "isTemporarilyOffline",
+        "offlineCauseReason",
+        "isIdle"
+      ]
+    }
+  }
+}
