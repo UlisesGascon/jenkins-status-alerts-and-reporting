@@ -8,12 +8,8 @@ const { updateOrCreateSegment } = require('@ulisesgascon/text-tags-manager')
 const { existsSync } = require('fs')
 const { readFile, writeFile, stat } = require('fs').promises
 
-const { validateDatabaseIntegrity } = require('./utils')
-const {
-  processJenkinsData,
-  generateReport,
-  downloadCurrentState
-} = require('./jenkins')
+const { validateDatabaseIntegrity, generateReportContent } = require('./utils')
+const { processJenkinsData, downloadCurrentState } = require('./jenkins')
 
 // most @actions toolkit packages have async methods
 async function run () {
@@ -124,7 +120,7 @@ async function run () {
       jenkinsData,
       database
     )
-    const reportContent = generateReport(reportData)
+    const reportContent = generateReportContent(reportData, jenkinsDomain)
 
     core.info('Checking database changes...')
     const hasChanges = isDifferent(database, newDatabaseState)

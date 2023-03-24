@@ -20,13 +20,17 @@ const processJenkinsData = (jenkinsData, database) => {
         computer.monitorData['hudson.plugin.versioncolumn.VersionMonitor'],
       isOffline: computer.offline,
       isTemporarilyOffline: computer.temporarilyOffline,
+      offlineCauseReason: computer.offlineCauseReason,
       isIdle: computer.idle
     }
 
     // @TODO: Deal with issues logic
 
     newDatabaseState[computer.displayName] = data
-    reportData.push(data)
+    reportData.push({
+      ...data,
+      status: computer.offline || computer.temporarilyOffline ? 'DOWN' : 'UP'
+    })
   })
 
   return {
