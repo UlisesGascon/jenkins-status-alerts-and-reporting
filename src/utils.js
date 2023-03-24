@@ -1,5 +1,5 @@
 const validateDatabaseIntegrity = () => {}
 
 module.exports = {
-    validateDatabaseIntegrity
+  validateDatabaseIntegrity
 }

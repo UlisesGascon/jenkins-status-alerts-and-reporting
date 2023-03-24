@@ -24,11 +24,11 @@ inputs:
   report-start-tag:
     description: 'Start tag to be used in the report'
     required: false
-    default: "<!-- JENKINS-REPORTING:START -->"
+    default: '<!-- JENKINS-REPORTING:START -->'
   report-end-tag:
     description: 'End tag to be used in the report'
     required: false
-    default: "<!-- JENKINS-REPORTING:END -->"
+    default: '<!-- JENKINS-REPORTING:END -->'
   issue-assignees:
     description: 'List of assignees for the issue to be generated'
     required: false
