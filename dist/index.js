@@ -10925,13 +10925,14 @@ const processJenkinsData = (jenkinsData, database) => {
   const newDatabaseState = {}
 
   jenkinsData.computer.forEach(computer => {
+    const diskUsageNode =
+      computer.monitorData[
+        'org.jenkins.ci.plugins.percentagecolumn.PercentageDiskSpaceMonitor'
+      ]
     const data = {
       name: computer.displayName,
       description: computer.description,
-      diskUsage:
-        computer.monitorData[
-          'org.jenkins.ci.plugins.percentagecolumn.PercentageDiskSpaceMonitor'
-        ].percentage,
+      diskUsage: diskUsageNode ? diskUsageNode.percentage : null,
       architecture:
         computer.monitorData['hudson.node_monitors.ArchitectureMonitor'],
       jvmVersion: computer.monitorData['hudson.node_monitors.JvmMonitor'],
