@@ -40,9 +40,9 @@ const processJenkinsData = (jenkinsData, database) => {
     newDatabaseState[computer.displayName] = data
     reportData.push({
       ...data,
-      diskUsage: computer.diskUsage
-        ? `<span style="color:${getDiskUsageColor(computer.diskUsage)}">**${
-            computer.diskUsage
+      diskUsage: data.diskUsage
+        ? `<span style="color:${getDiskUsageColor(data.diskUsage)}">**${
+            data.diskUsage
           }%**</span>`
         : 'N/A',
       status:
