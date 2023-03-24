@@ -49,7 +49,7 @@ async function run () {
         .filter(x => x !== '')
         .map(x => x.trim()) || []
     const generateIssuesforUnkownNodes = normalizeBoolean(
-      core.getInput('create-issue-for-new-offline-nodes', { required: false })
+      core.getInput('create-issues-for-new-offline-nodes', { required: false })
     )
     const generateIssue = normalizeBoolean(
       core.getInput('generate-issue', { required: false })
