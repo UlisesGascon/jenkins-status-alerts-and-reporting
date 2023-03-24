@@ -63,8 +63,11 @@ const processJenkinsData = ({
 
     if (
       computer.offline &&
+      // if the node doesn't exist in the database but is expected to create an issue
       ((generateIssuesforUnkownNodes && !database[computer.displayName]) ||
-        !database[computer.displayName].isOffline)
+        // if the node exists in the database but is not offline
+        (database[computer.displayName] &&
+          !database[computer.displayName].isOffline))
     ) {
       core.debug(`Creating issue for ${computer.displayName}...`)
       issuesData.push({
