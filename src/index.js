@@ -120,7 +120,7 @@ async function run () {
       jenkinsData,
       database
     )
-    const reportContent = generateReportContent({
+    const reportContent = await generateReportContent({
       computers: reportData,
       jenkinsDomain,
       reportTagsEnabled
