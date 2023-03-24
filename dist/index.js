@@ -12127,6 +12127,7 @@ function wrappy (fn, cb) {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const https = __nccwpck_require__(5687)
+const { generateIssueBodyContent } = __nccwpck_require__(1608)
 
 const getDiskUsageEmoji = diskUsage => {
   if (diskUsage < 60) {
@@ -12138,7 +12139,7 @@ const getDiskUsageEmoji = diskUsage => {
   }
 }
 
-const processJenkinsData = (jenkinsData, database) => {
+const processJenkinsData = ({ jenkinsData, database, jenkinsDomain }) => {
   const reportData = []
   const issuesData = []
   const newDatabaseState = {}
@@ -12179,6 +12180,18 @@ const processJenkinsData = (jenkinsData, database) => {
         ? `🔥 **${computer.offlineCauseReason}**`
         : 'N/A'
     })
+
+    // @TODO: Disable the issue notification if the user doesn't want it in the first run
+    if (
+      computer.offline &&
+      (!database[computer.displayName] ||
+        !database[computer.displayName].isOffline)
+    ) {
+      issuesData.push({
+        title: `${computer.displayName} is DOWN`,
+        body: generateIssueBodyContent(computer, jenkinsDomain)
+      })
+    }
   })
 
   return {
@@ -12251,9 +12264,18 @@ const generateReportContent = async ({
   return ejs.render(template, { computers, jenkinsDomain, reportTagsEnabled })
 }
 
+const generateIssueBodyContent = async (computer, jenkinsDomain) => {
+  const template = await readFile(
+    __nccwpck_require__.ab + "issue.ejs",
+    'utf8'
+  )
+  return ejs.render(template, { computer, jenkinsDomain })
+}
+
 module.exports = {
   validateDatabaseIntegrity,
-  generateReportContent
+  generateReportContent,
+  generateIssueBodyContent
 }
 
 

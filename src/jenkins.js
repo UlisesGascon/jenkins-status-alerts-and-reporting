@@ -1,4 +1,5 @@
 const https = require('https')
+const { generateIssueBodyContent } = require('./utils')
 
 const getDiskUsageEmoji = diskUsage => {
   if (diskUsage < 60) {
@@ -10,7 +11,7 @@ const getDiskUsageEmoji = diskUsage => {
   }
 }
 
-const processJenkinsData = (jenkinsData, database) => {
+const processJenkinsData = ({ jenkinsData, database, jenkinsDomain }) => {
   const reportData = []
   const issuesData = []
   const newDatabaseState = {}
@@ -51,6 +52,18 @@ const processJenkinsData = (jenkinsData, database) => {
         ? `🔥 **${computer.offlineCauseReason}**`
         : 'N/A'
     })
+
+    // @TODO: Disable the issue notification if the user doesn't want it in the first run
+    if (
+      computer.offline &&
+      (!database[computer.displayName] ||
+        !database[computer.displayName].isOffline)
+    ) {
+      issuesData.push({
+        title: `${computer.displayName} is DOWN`,
+        body: generateIssueBodyContent(computer, jenkinsDomain)
+      })
+    }
   })
 
   return {

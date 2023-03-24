@@ -20,7 +20,16 @@ const generateReportContent = async ({
   return ejs.render(template, { computers, jenkinsDomain, reportTagsEnabled })
 }
 
+const generateIssueBodyContent = async (computer, jenkinsDomain) => {
+  const template = await readFile(
+    join(process.cwd(), 'templates/issue.ejs'),
+    'utf8'
+  )
+  return ejs.render(template, { computer, jenkinsDomain })
+}
+
 module.exports = {
   validateDatabaseIntegrity,
-  generateReportContent
+  generateReportContent,
+  generateIssueBodyContent
 }
