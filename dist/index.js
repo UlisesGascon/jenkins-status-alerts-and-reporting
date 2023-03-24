@@ -12127,6 +12127,17 @@ function wrappy (fn, cb) {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const https = __nccwpck_require__(5687)
+
+const getDiskUsageColor = diskUsage => {
+  if (diskUsage < 50) {
+    return 'green'
+  } else if (diskUsage < 80) {
+    return 'yellow'
+  } else {
+    return 'red'
+  }
+}
+
 const processJenkinsData = (jenkinsData, database) => {
   const reportData = []
   const issuesData = []
@@ -12157,7 +12168,18 @@ const processJenkinsData = (jenkinsData, database) => {
     newDatabaseState[computer.displayName] = data
     reportData.push({
       ...data,
-      status: computer.offline || computer.temporarilyOffline ? 'DOWN' : 'UP'
+      diskUsage: computer.diskUsage
+        ? `<span style="color:${getDiskUsageColor(computer.diskUsage)}">**${
+            computer.diskUsage
+          }%**</span>`
+        : 'N/A',
+      status:
+        computer.offline || computer.temporarilyOffline
+          ? '<span style="color:red">**DOWN**</span>'
+          : '<span style="color:green">**UP**</span>',
+      offlineCauseReason: computer.offlineCauseReason
+        ? `<span style="color:red">**${computer.offlineCauseReason}**</span>`
+        : 'N/A'
     })
   })
 
