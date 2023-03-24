@@ -41,7 +41,7 @@ const processJenkinsData = ({ jenkinsData, database, jenkinsDomain }) => {
     // @TODO: Deal with issues logic
 
     newDatabaseState[computer.displayName] = data
-    reportData.push({
+    const computerExtendedData = {
       ...data,
       diskUsage: data.diskUsage
         ? `${getDiskUsageEmoji(data.diskUsage)} **${data.diskUsage}%**`
@@ -53,7 +53,8 @@ const processJenkinsData = ({ jenkinsData, database, jenkinsDomain }) => {
       offlineCauseReason: computer.offlineCauseReason
         ? `🔥 **${computer.offlineCauseReason}**`
         : 'N/A'
-    })
+    }
+    reportData.push(computerExtendedData)
 
     // @TODO: Disable the issue notification if the user doesn't want it in the first run
     if (
@@ -64,7 +65,7 @@ const processJenkinsData = ({ jenkinsData, database, jenkinsDomain }) => {
       core.debug(`Creating issue for ${computer.displayName}...`)
       issuesData.push({
         title: `${computer.displayName} is DOWN`,
-        body: generateIssueBodyContent(computer, jenkinsDomain)
+        body: generateIssueBodyContent(computerExtendedData, jenkinsDomain)
       })
     }
   })
