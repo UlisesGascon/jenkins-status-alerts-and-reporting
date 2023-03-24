@@ -191,7 +191,7 @@ async function run () {
       core.info('Issues created!')
     }
     // SET OUTPUTS
-    core.setOutput('computers', newDatabaseState)
+    core.setOutput('computers', JSON.stringify(newDatabaseState))
 
     core.info('Process finished successfully! 🎉🎉🎉')
   } catch (error) {
