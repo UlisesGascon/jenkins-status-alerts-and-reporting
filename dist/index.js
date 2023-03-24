@@ -12126,6 +12126,7 @@ function wrappy (fn, cb) {
 /***/ 8280:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+const core = __nccwpck_require__(2186)
 const https = __nccwpck_require__(5687)
 const { generateIssueBodyContent } = __nccwpck_require__(1608)
 
@@ -12145,6 +12146,7 @@ const processJenkinsData = ({ jenkinsData, database, jenkinsDomain }) => {
   const newDatabaseState = {}
 
   jenkinsData.computer.forEach(computer => {
+    core.debug(`Processing ${computer.displayName}...`)
     const diskUsageNode =
       computer.monitorData[
         'org.jenkins.ci.plugins.percentagecolumn.PercentageDiskSpaceMonitor'
@@ -12187,6 +12189,7 @@ const processJenkinsData = ({ jenkinsData, database, jenkinsDomain }) => {
       (!database[computer.displayName] ||
         !database[computer.displayName].isOffline)
     ) {
+      core.debug(`Creating issue for ${computer.displayName}...`)
       issuesData.push({
         title: `${computer.displayName} is DOWN`,
         body: generateIssueBodyContent(computer, jenkinsDomain)
@@ -12199,10 +12202,6 @@ const processJenkinsData = ({ jenkinsData, database, jenkinsDomain }) => {
     issuesData,
     newDatabaseState
   }
-}
-
-const generateReport = reportData => {
-  return 'THIS IS A PLACE HOLDER'
 }
 
 const downloadCurrentState = ({
@@ -12232,7 +12231,6 @@ const downloadCurrentState = ({
 
 module.exports = {
   processJenkinsData,
-  generateReport,
   downloadCurrentState
 }
 
