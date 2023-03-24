@@ -1,9 +1,9 @@
 const https = require('https')
 
 const getDiskUsageEmoji = diskUsage => {
-  if (diskUsage < 50) {
+  if (diskUsage < 60) {
     return '✅'
-  } else if (diskUsage < 80) {
+  } else if (diskUsage < 85) {
     return '⚠️'
   } else {
     return '🔥'
@@ -41,7 +41,7 @@ const processJenkinsData = (jenkinsData, database) => {
     reportData.push({
       ...data,
       diskUsage: data.diskUsage
-        ? `${getDiskUsageEmoji(data.diskUsage)}**${data.diskUsage}%**`
+        ? `${getDiskUsageEmoji(data.diskUsage)} **${data.diskUsage}%**`
         : 'N/A',
       status:
         computer.offline || computer.temporarilyOffline
