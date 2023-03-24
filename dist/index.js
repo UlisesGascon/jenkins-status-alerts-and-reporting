@@ -12611,10 +12611,11 @@ async function run () {
     }
 
     core.info('Generating Report Data...')
-    const { reportData, issuesData, newDatabaseState } = processJenkinsData(
+    const { reportData, issuesData, newDatabaseState } = processJenkinsData({
       jenkinsData,
-      database
-    )
+      database,
+      jenkinsDomain
+    })
     const reportContent = generateReportContent({
       computers: reportData,
       jenkinsDomain,
