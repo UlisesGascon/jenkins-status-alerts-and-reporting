@@ -19977,17 +19977,16 @@ async function run () {
     await writeFile(databasePath, JSON.stringify(newDatabaseState, null, 2))
 
     if (reportPath) {
-      await writeFile(
-        reportPath,
-        reportTagsEnabled
-          ? updateOrCreateSegment({
-              original: originalReportContent,
-              replacementSegment: reportContent,
-              startTag,
-              endTag
-            })
-          : reportContent
-      )
+      let content = reportContent
+      if (reportTagsEnabled) {
+        content = updateOrCreateSegment({
+          original: originalReportContent,
+          replacementSegment: reportContent,
+          startTag,
+          endTag
+        })
+      }
+      await writeFile(reportPath, content)
     }
 
     // Commit changes
