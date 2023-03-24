@@ -1,108 +1,184 @@
 # Jenkins status alerts and reporting
 
-Create a Github Action that monitors the status of Jenkins and generates Markdown reports for your inventory. It also alerts you when the nodes are not functioning properly.
+**Create a Github Action that monitors the status of Jenkins and generates Markdown reports for your inventory. It also alerts you when the nodes are not functioning properly.**
 
-This template includes tests, linting, a validation workflow, publishing, and versioning guidance.
+## 🔮 About
 
-If you are new, there's also a simpler introduction. See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+Let's face it, monitoring the status of Jenkins can be a real headache. If your nodes aren't functioning properly, it can quickly turn into a full-blown migraine. But fear not, dear developers, for there's a new Github Action in town that will save you from the agony of manual monitoring.
 
-## Code in Main
+Introducing the Github Action that monitors the status of Jenkins and generates Markdown reports for your inventory. This little gem not only keeps an eye on your Jenkins nodes, but it also compiles easy-to-read reports so that you can stay on top of your inventory status with ease.
 
-Install the dependencies
+And if that wasn't enough to make you jump for joy, the Github Action also create issues when it detects that your nodes aren't functioning properly. Now you can sit back, relax, and let this trusty assistant take care of the dirty work for you.
 
-```bash
-npm install
+## 📺 Tutorial
+
+_soon_
+
+## ❤️ Awesome Features
+
+- Easy to use with great customization
+- Reporting in Markdown with essential information (Disk usage, JVM version...)
+- Self-hosted: The reporting data is stored in json format (including previous records) in the repo itself.
+- Generate an issue (assignation, labels..) when machines are offline, including links to the Jenkins Dashboard.
+- Extend the markdown template with you own content by using tags
+- Easy to modify the files and ensure the integrity with Json Schemas
+- The report data is exported as an output and can be used in the pipeline
+- Great test coverage (in progress)
+
+### 🎉 Demo
+
+**Sample Report**
+
+![sample report](.github/img/report.png)
+
+_[Sample report](https://github.com/UlisesGascon/jenkins-status-alerts-and-reporting-demo/blob/main/experimental/jenkins-report.md)_
+
+**Sample Issue**
+
+![sample issue preview](.github/img/issue.png)
+
+_[Sample issue](https://github.com/UlisesGascon/jenkins-status-alerts-and-reporting-demo/issues/3)_
+
+## :shipit: Used By
+
+**soon**
+
+- **[More users](https://github.com/UlisesGascon/jenkins-status-alerts-and-reporting/network/dependents)**
+
+## 📡 Usage
+
+### Sample
+
+With this workflow you get them most of this action:
+
+- Trigger manual or by Cron job every Day
+- It will generate a detailed report
+- It will store the database in the repo
+- It will generate an issue per machine that is down
+
+```yml
+name: 'Jenkins Monitoring'
+on:
+  # Scheduled trigger
+  schedule:
+    # Run every Day at 00:00
+    - cron: '0 0 * * *'
+  # Manual trigger
+  workflow_dispatch:
+
+permissions:
+  # Write access in order to update the local files with the reports
+  contents: write
+  pull-requests: none
+  # Write access in order to create issues
+  issues: write
+  packages: none
+
+jobs:
+  jenkins-status:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Jenkins status alerts and reporting
+        uses: UlisesGascon/jenkins-status-alerts-and-reporting@v1.0.0
+        id: jenkins-status-alerts-and-reporting
+        with:
+          database: experimental/database.json
+          jenkins-domain: 'jenkins.example.com'
+          jenkins-username: ${{ secrets.JENKINS_USERNAME }}
+          jenkins-token: ${{ secrets.JENKINS_TOKEN }}
+          # Issues
+          generate-issue: true
+          issue-assignees: 'UlisesGascon'
+          issue-labels: 'incident,machine-down'
+          # Report
+          report: experimental/jenkins-report.md
+          report-tags-enabled: true
+          # Git changes
+          auto-commit: true
+          auto-push: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-Run the tests :heavy_check_mark:
+### Options
 
-```bash
-$ npm test
+- `jenkins-domain`: The domain name of your Jenkins server without the protocol or trailing slash, like `jenkins.example.com`
+- `jenkins-username`: The username of the Jenkins user
+- `jenkins-token`: The API token of the Jenkins user
+- `database`: Defines the path to the json file usage to store the nodes information
+- `report`: Defines the path where the markdown report will be added/updated
+- `auto-commit`: Commits the changes in the `database` and `report` files
+- `auto-push`: Pushes the code changes to the branch
+- `generate-issue`: Create an issue per machine that is down
+- `issue-assignees`: List of assignees for the issue
+- `issue-labels`: List of labels for the issue
+- `github-token`: The token usage to create the issue and push the code
+- `report-tags-enabled`: Defines if the markdown report must be created/updated around tags by default is disabled. This is useful if the report is going to be include in a file that has other content on it, like docusaurus docs site or similar.
+- `report-start-tag`: Defines the start tag, default `<!-- JENKINS-REPORTING:START -->`
+- `report-end-tag` Defines the closing tag, default `<!-- JENKINS-REPORTING:END -->`
+- `create-issues-for-new-offline-nodes`: Automatically generate an issue if the node is offline and has not been previously recorded in the database
 
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
-...
+### Outputs
+
+- `computers`: The list of Jenkins computers with all the details (same as the database content)
+
+```yml
+name: 'OpenSSF Scoring'
+on:
+  # ...
+
+permissions:
+  # ...
+
+jobs:
+  jenkins-status:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Jenkins status alerts and reporting
+        uses: UlisesGascon/jenkins-status-alerts-and-reporting@v1.0.0
+        id: jenkins-status
+        with:
+          # ....
+      - name: Print the Computers
+        run: |
+          echo '${{ steps.jenkins-status.outputs.computers }}'
 ```
 
-## Change action.yml
+## 🚀 Advance Tips
 
-The action.yml defines the inputs and output for your action.
+### Avoid creating issues for machines that are already down
 
-Update the action.yml with your name, description, inputs and outputs for your action.
+If you want to avoid creating issues for the machines that are already down in your infra on the first run, use `create-issues-for-new-offline-nodes=false`
 
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
+### Embed Report version
 
-## Change the Code
+If you want to mix the report in markdown format with other content, then you can use `report-tags-enabled=true` then report file will use the tags to add/update the report summary without affecting what is before or after the tagged section.
 
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
+This is very useful for static websites.
 
-```javascript
-const core = require('@actions/core');
-...
+### Custom tags
 
-async function run() {
-  try {
-      ...
-  }
-  catch (error) {
-    core.setFailed(error.message);
+By default we use `<!-- JENKINS-REPORTING:START -->` and `<!-- JENKINS-REPORTING:END -->`, but this can be customize by adding your custom tags as `report-start-tag` and `report-end-tag`
+
+## 🍿 Other
+
+### Database structure
+
+Just for reference, the database will store the current Jenkins nodes in this shape:
+
+```json
+{
+  "test-azure_msft-ubuntu1604_arm_cross-x64-1": {
+    "name": "test-azure_msft-ubuntu1604_arm_cross-x64-1",
+    "description": "Ubuntu 16.04 LTS with Raspberry Pi cross compilers installed",
+    "diskUsage": null,
+    "architecture": null,
+    "monitorVersion": null,
+    "isOffline": true,
+    "isTemporarilyOffline": false,
+    "offlineCauseReason": "",
+    "isIdle": true
   }
 }
-
-run()
 ```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
-## Package for distribution
-
-GitHub Actions will run the entry point from the action.yml. Packaging assembles the code into one file that can be checked in to Git, enabling fast and reliable execution and preventing the need to check in node_modules.
-
-Actions are run from GitHub repos. Packaging the action will create a packaged action in the dist folder.
-
-Run prepare
-
-```bash
-npm run build
-```
-
-Since the packaged index.js is run from the dist folder.
-
-```bash
-git add dist
-```
-
-## Create a release branch
-
-Users shouldn't consume the action from master since that would be latest code and actions can break compatibility between major versions.
-
-Checkin to the v1 release branch
-
-```bash
-git checkout -b v1
-git commit -a -m "v1 release"
-```
-
-```bash
-git push origin v1
-```
-
-Note: We recommend using the `--license` option for ncc, which will create a license file for all of the production node modules used in your project.
-
-Your action is now published! :rocket:
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Usage
-
-You can now consume the action by referencing the v1 branch
-
-```yaml
-uses: actions/javascript-action@v1
-with:
-  milliseconds: 1000
-```
-
-See the [actions tab](https://github.com/actions/javascript-action/actions) for runs of this action! :rocket:
