@@ -7,13 +7,17 @@ const validateDatabaseIntegrity = () => {
   return true
 }
 
-const generateReportContent = async (computers, jenkinsDomain) => {
+const generateReportContent = async ({
+  computers,
+  jenkinsDomain,
+  reportTagsEnabled
+}) => {
   core.debug('Generating report content')
   const template = await readFile(
     join(process.cwd(), 'templates/report.ejs'),
     'utf8'
   )
-  return ejs.render(template, { computers, jenkinsDomain })
+  return ejs.render(template, { computers, jenkinsDomain, reportTagsEnabled })
 }
 
 module.exports = {

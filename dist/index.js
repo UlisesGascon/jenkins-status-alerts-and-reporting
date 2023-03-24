@@ -12218,13 +12218,17 @@ const validateDatabaseIntegrity = () => {
   return true
 }
 
-const generateReportContent = async (computers, jenkinsDomain) => {
+const generateReportContent = async ({
+  computers,
+  jenkinsDomain,
+  reportTagsEnabled
+}) => {
   core.debug('Generating report content')
   const template = await readFile(
     __nccwpck_require__.ab + "report.ejs",
     'utf8'
   )
-  return ejs.render(template, { computers, jenkinsDomain })
+  return ejs.render(template, { computers, jenkinsDomain, reportTagsEnabled })
 }
 
 module.exports = {
@@ -12566,7 +12570,11 @@ async function run () {
       jenkinsData,
       database
     )
-    const reportContent = generateReportContent(reportData, jenkinsDomain)
+    const reportContent = generateReportContent({
+      computers: reportData,
+      jenkinsDomain,
+      reportTagsEnabled
+    })
 
     core.info('Checking database changes...')
     const hasChanges = isDifferent(database, newDatabaseState)
