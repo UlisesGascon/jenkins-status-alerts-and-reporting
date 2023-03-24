@@ -126,6 +126,8 @@ async function run () {
       reportTagsEnabled
     })
 
+    core.debug(`Report Content: ${reportContent}`)
+
     core.info('Checking database changes...')
     const hasChanges = isDifferent(database, newDatabaseState)
 
