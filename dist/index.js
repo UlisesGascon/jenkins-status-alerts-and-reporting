@@ -12128,13 +12128,13 @@ function wrappy (fn, cb) {
 
 const https = __nccwpck_require__(5687)
 
-const getDiskUsageColor = diskUsage => {
+const getDiskUsageEmoji = diskUsage => {
   if (diskUsage < 50) {
-    return 'green'
+    return '✅'
   } else if (diskUsage < 80) {
-    return 'yellow'
+    return '⚠️'
   } else {
-    return 'red'
+    return '🔥'
   }
 }
 
@@ -12169,16 +12169,14 @@ const processJenkinsData = (jenkinsData, database) => {
     reportData.push({
       ...data,
       diskUsage: data.diskUsage
-        ? `<span style="color:${getDiskUsageColor(data.diskUsage)}">**${
-            data.diskUsage
-          }%**</span>`
+        ? `${getDiskUsageEmoji(data.diskUsage)}**${data.diskUsage}%**`
         : 'N/A',
       status:
         computer.offline || computer.temporarilyOffline
-          ? '<span style="color:red">**DOWN**</span>'
-          : '<span style="color:green">**UP**</span>',
+          ? '❌ **DOWN**'
+          : '✅ **UP**',
       offlineCauseReason: computer.offlineCauseReason
-        ? `<span style="color:red">**${computer.offlineCauseReason}**</span>`
+        ? `🔥 **${computer.offlineCauseReason}**`
         : 'N/A'
     })
   })
