@@ -13,7 +13,7 @@ inputs:
     description: 'The API token of the Jenkins user'
     required: true
   database:
-    description: 'File that stores the state of the scorecard'
+    description: 'File that stores the state of the Jenkins Nodes'
     required: true
   github-token:
     description: 'Token to access the repository'
@@ -39,7 +39,7 @@ inputs:
     description: 'Automatically generate an issue with the discrepancies'
     required: false
   report:
-    description: 'File that stores the report of the scorecard'
+    description: 'File that stores the report of Jekins nodes'
     required: false
   auto-commit:
     description: 'Automatically commit the changes to the repository'
