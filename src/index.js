@@ -48,6 +48,9 @@ async function run () {
         .split(',')
         .filter(x => x !== '')
         .map(x => x.trim()) || []
+    const generateIssuesforUnkownNodes = normalizeBoolean(
+      core.getInput('create-issue-for-new-offline-nodes', { required: false })
+    )
     const generateIssue = normalizeBoolean(
       core.getInput('generate-issue', { required: false })
     )
@@ -119,7 +122,8 @@ async function run () {
     const { reportData, issuesData, newDatabaseState } = processJenkinsData({
       jenkinsData,
       database,
-      jenkinsDomain
+      jenkinsDomain,
+      generateIssuesforUnkownNodes
     })
     const reportContent = generateReportContent({
       computers: reportData,

@@ -47,6 +47,10 @@ inputs:
   auto-push:
     description: 'Automatically push the changes to the repository'
     required: false
+  create-issue-for-new-offline-nodes:
+    description: 'Automatically generate an issue if the node is offline and has not been previously recorded in the database'
+    required: false
+    default: 'true'
 outputs:
   computers:
     description: 'The list of Jenkins computers with all the details'
