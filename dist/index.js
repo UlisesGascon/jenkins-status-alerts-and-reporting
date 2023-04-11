@@ -19486,7 +19486,10 @@ const processJenkinsData = ({
     reportData.push(computerExtendedData)
 
     if (
+      // Check if the node is offline
       computer.offline &&
+      // Ignore if the Node is temporarily offline
+      !computer.temporarilyOffline &&
       // if the node doesn't exist in the database but is expected to create an issue
       ((generateIssuesforUnkownNodes && !database[computer.displayName]) ||
         // if the node exists in the database but is not offline
