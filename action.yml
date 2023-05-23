@@ -38,6 +38,9 @@ inputs:
   generate-issue:
     description: 'Automatically generate an issue with the discrepancies'
     required: false
+  auto-close-issue:
+    description: 'Automatically close the issue when the agent is up again'
+    required: false
   report:
     description: 'File that stores the report of Jekins nodes'
     required: false

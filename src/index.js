@@ -61,11 +61,14 @@ async function run () {
     const autoPush = normalizeBoolean(
       core.getInput('auto-push', { required: false })
     )
+    const autoCloseIssue = normalizeBoolean(
+      core.getInput('auto-close-issue', { required: false })
+    )
 
     // Error Handling
     if (
       !githubToken &&
-      [autoPush, autoCommit, generateIssue].some(value => value)
+      [autoPush, autoCommit, generateIssue, autoCloseIssue].some(value => value)
     ) {
       throw new Error(
         'Github token is required for push, commit and create an issue operations!'
