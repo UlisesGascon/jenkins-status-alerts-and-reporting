@@ -199,6 +199,40 @@ async function run () {
 
       core.info('Issues created!')
     }
+
+    // Issue closing
+    if(autoCloseIssue){
+      core.info('Checking for issues to close...')
+      const issuesOpen = await octokit.paginate(octokit.rest.issues.listForRepo, {
+        owner: "octokit",
+        repo: "rest.js",
+        state: "open",
+        per_page: 100,
+      })
+
+      core.info(`Total issues open: ${issuesOpen.length}`)
+      if (issuesOpen.length) {
+        for (await machine in newDatabaseState){
+          if(newDatabaseState[machine].status === 'online'){
+            const issueToClose = issuesOpen.find(issue => issue.title === `${newDatabaseState[machine].name} is DOWN`)
+            if(issueToClose){
+              core.info(`Closing issue ${issueToClose.number}...`)
+              await octokit.rest.issues.update({
+                ...context.repo,
+                issue_number: issueToClose.number,
+                state: 'closed',
+                state_reason: 'The machine is now online again 🙌'
+              })
+            }
+          } else {
+            core.info(`Machine ${machine} is not online, skipping...`)
+          }
+        }
+      } else {
+        core.info('There are no issues open!')
+      }
+    }
+
     // SET OUTPUTS
     core.setOutput('computers', JSON.stringify(newDatabaseState))
 
