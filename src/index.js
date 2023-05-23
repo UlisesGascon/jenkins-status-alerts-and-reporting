@@ -204,14 +204,14 @@ async function run () {
     if (autoCloseIssue) {
       core.info('Checking for issues to close...')
       const issuesOpen = await octokit.paginate(octokit.rest.issues.listForRepo, {
-        owner: 'octokit',
-        repo: 'rest.js',
+        ...context.repo,
         state: 'open',
         per_page: 100
       })
 
       core.info(`Total issues open: ${issuesOpen.length}`)
       if (issuesOpen.length) {
+        core.info(`Database: ${JSON.stringify(newDatabaseState)}`)
         for (const machine in Object.keys(newDatabaseState)) {
           core.info(`Checking status for machine (${machine})...`)
           if (!newDatabaseState[machine].isOffline) {
