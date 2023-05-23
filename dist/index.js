@@ -20045,8 +20045,7 @@ async function run () {
 
       core.info(`Total issues open: ${issuesOpen.length}`)
       if (issuesOpen.length) {
-        core.info(`Database: ${JSON.stringify(newDatabaseState)}`)
-        for (const machine in Object.keys(newDatabaseState)) {
+        for (const machine in newDatabaseState) {
           core.info(`Checking status for machine (${machine})...`)
           if (!newDatabaseState[machine].isOffline) {
             core.info(`Machine (${machine}) is online, checking if there is an issue to close...`)
