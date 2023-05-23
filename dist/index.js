@@ -20052,11 +20052,17 @@ async function run () {
             const issueToClose = issuesOpen.find(issue => issue.title === `${newDatabaseState[machine].name} is DOWN`)
             if (issueToClose) {
               core.info(`Closing issue ${issueToClose.number} for machine (${machine})...`)
+
+              await octokit.rest.issues.createComment({
+                ...context.repo,
+                issue_number: issueToClose.number,
+                body: 'The machine is now online again 🙌'
+              })
+
               await octokit.rest.issues.update({
                 ...context.repo,
                 issue_number: issueToClose.number,
-                state: 'closed',
-                state_reason: 'The machine is now online again 🙌'
+                state: 'closed'
               })
             }
           } else {
