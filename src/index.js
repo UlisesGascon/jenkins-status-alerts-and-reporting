@@ -61,11 +61,14 @@ async function run () {
     const autoPush = normalizeBoolean(
       core.getInput('auto-push', { required: false })
     )
+    const autoCloseIssue = normalizeBoolean(
+      core.getInput('auto-close-issue', { required: false })
+    )
 
     // Error Handling
     if (
       !githubToken &&
-      [autoPush, autoCommit, generateIssue].some(value => value)
+      [autoPush, autoCommit, generateIssue, autoCloseIssue].some(value => value)
     ) {
       throw new Error(
         'Github token is required for push, commit and create an issue operations!'
@@ -196,6 +199,57 @@ async function run () {
 
       core.info('Issues created!')
     }
+
+    // Issue closing
+    if (autoCloseIssue) {
+      core.info('Checking for issues to close...')
+      const issuesOpen = await octokit.paginate(
+        octokit.rest.issues.listForRepo,
+        {
+          ...context.repo,
+          state: 'open',
+          per_page: 100
+        }
+      )
+
+      core.info(`Total issues open: ${issuesOpen.length}`)
+      if (issuesOpen.length) {
+        for (const machine in newDatabaseState) {
+          core.info(`Checking status for machine (${machine})...`)
+          if (!newDatabaseState[machine].isOffline) {
+            core.info(
+              `Machine (${machine}) is online, checking if there is an issue to close...`
+            )
+            const issueToClose = issuesOpen.find(
+              issue =>
+                issue.title === `${newDatabaseState[machine].name} is DOWN`
+            )
+            if (issueToClose) {
+              core.info(
+                `Closing issue ${issueToClose.number} for machine (${machine})...`
+              )
+
+              await octokit.rest.issues.createComment({
+                ...context.repo,
+                issue_number: issueToClose.number,
+                body: 'The machine is now online again 🙌'
+              })
+
+              await octokit.rest.issues.update({
+                ...context.repo,
+                issue_number: issueToClose.number,
+                state: 'closed'
+              })
+            }
+          } else {
+            core.info(`Machine ${machine} is not online, skipping...`)
+          }
+        }
+      } else {
+        core.info('There are no issues open!')
+      }
+    }
+
     // SET OUTPUTS
     core.setOutput('computers', JSON.stringify(newDatabaseState))
 

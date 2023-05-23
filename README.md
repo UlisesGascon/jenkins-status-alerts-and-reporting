@@ -20,6 +20,7 @@ _soon_
 - Reporting in Markdown with essential information (Disk usage, JVM version...)
 - Self-hosted: The reporting data is stored in json format (including previous records) in the repo itself.
 - Generate an issue (assignation, labels..) when machines are offline, including links to the Jenkins Dashboard.
+- Close the issue when the machine is back online
 - Extend the markdown template with you own content by using tags
 - Easy to modify the files and ensure the integrity with Json Schemas
 - The report data is exported as an output and can be used in the pipeline
@@ -55,6 +56,7 @@ With this workflow you get them most of this action:
 - It will generate a detailed report
 - It will store the database in the repo
 - It will generate an issue per machine that is down
+- It will close the issue if the machine is back online
 
 ```yml
 name: 'Jenkins Monitoring'
@@ -91,6 +93,7 @@ jobs:
           generate-issue: true
           issue-assignees: 'UlisesGascon'
           issue-labels: 'incident,machine-down'
+          auto-close-issue: true
           # Report
           report: experimental/jenkins-report.md
           report-tags-enabled: true
