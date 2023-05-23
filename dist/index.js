@@ -20047,9 +20047,9 @@ async function run () {
       core.info(`Total issues open: ${issuesOpen.length}`)
       if (issuesOpen.length) {
         for (const machine in Object.keys(newDatabaseState)) {
-          if (newDatabaseState[machine].status === 'online') {
+          if (!newDatabaseState[machine].isOffline) {
             const issueToClose = issuesOpen.find(issue => issue.title === `${newDatabaseState[machine].name} is DOWN`)
-            if (issueToClose && !newDatabaseState[machine].isOffline) {
+            if (issueToClose) {
               core.info(`Closing issue ${issueToClose.number}...`)
               await octokit.rest.issues.update({
                 ...context.repo,
