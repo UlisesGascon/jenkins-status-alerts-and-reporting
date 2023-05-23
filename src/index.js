@@ -203,21 +203,31 @@ async function run () {
     // Issue closing
     if (autoCloseIssue) {
       core.info('Checking for issues to close...')
-      const issuesOpen = await octokit.paginate(octokit.rest.issues.listForRepo, {
-        ...context.repo,
-        state: 'open',
-        per_page: 100
-      })
+      const issuesOpen = await octokit.paginate(
+        octokit.rest.issues.listForRepo,
+        {
+          ...context.repo,
+          state: 'open',
+          per_page: 100
+        }
+      )
 
       core.info(`Total issues open: ${issuesOpen.length}`)
       if (issuesOpen.length) {
         for (const machine in newDatabaseState) {
           core.info(`Checking status for machine (${machine})...`)
           if (!newDatabaseState[machine].isOffline) {
-            core.info(`Machine (${machine}) is online, checking if there is an issue to close...`)
-            const issueToClose = issuesOpen.find(issue => issue.title === `${newDatabaseState[machine].name} is DOWN`)
+            core.info(
+              `Machine (${machine}) is online, checking if there is an issue to close...`
+            )
+            const issueToClose = issuesOpen.find(
+              issue =>
+                issue.title === `${newDatabaseState[machine].name} is DOWN`
+            )
             if (issueToClose) {
-              core.info(`Closing issue ${issueToClose.number} for machine (${machine})...`)
+              core.info(
+                `Closing issue ${issueToClose.number} for machine (${machine})...`
+              )
 
               await octokit.rest.issues.createComment({
                 ...context.repo,
