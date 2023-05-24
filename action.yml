@@ -42,7 +42,7 @@ inputs:
     description: 'Automatically close the issue when the agent is up again'
     required: false
   report:
-    description: 'File that stores the report of Jekins nodes'
+    description: 'File that stores the report of Jenkins nodes'
     required: false
   auto-commit:
     description: 'Automatically commit the changes to the repository'
