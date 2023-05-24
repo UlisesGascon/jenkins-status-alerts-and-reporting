@@ -82,7 +82,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Jenkins status alerts and reporting
-        uses: UlisesGascon/jenkins-status-alerts-and-reporting@v1.0.0
+        uses: UlisesGascon/jenkins-status-alerts-and-reporting@v1.3.0
         id: jenkins-status-alerts-and-reporting
         with:
           database: experimental/database.json
@@ -142,7 +142,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Jenkins status alerts and reporting
-        uses: UlisesGascon/jenkins-status-alerts-and-reporting@v1.0.0
+        uses: UlisesGascon/jenkins-status-alerts-and-reporting@v1.3.0
         id: jenkins-status
         with:
           # ....
