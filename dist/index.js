@@ -19898,11 +19898,19 @@ async function run () {
     const autoCloseIssue = normalizeBoolean(
       core.getInput('auto-close-issue', { required: false })
     )
+    const diskAlertLevel =
+      parseInt(core.getInput('disk-alert-level', { required: false })) || 0
 
     // Error Handling
     if (
       !githubToken &&
-      [autoPush, autoCommit, generateIssue, autoCloseIssue].some(value => value)
+      [
+        autoPush,
+        autoCommit,
+        generateIssue,
+        autoCloseIssue,
+        diskAlertLevel
+      ].some(value => value)
     ) {
       throw new Error(
         'Github token is required for push, commit and create an issue operations!'
