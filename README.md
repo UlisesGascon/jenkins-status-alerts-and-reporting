@@ -24,6 +24,7 @@ _soon_
 - Extend the markdown template with you own content by using tags
 - Easy to modify the files and ensure the integrity with Json Schemas
 - The report data is exported as an output and can be used in the pipeline
+- Generate an issue if the disk usage is above a certain level, auto-close when the disk usage is back to normal
 - Great test coverage (in progress)
 
 ### 🎉 Demo
