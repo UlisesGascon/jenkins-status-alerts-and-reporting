@@ -208,19 +208,28 @@ async function run () {
       core.info('Issues created!')
     }
 
+    // List current issues open
+
+    let issuesOpen = []
+    if (autoCloseIssue || diskAlertLevel) {
+      issuesOpen = await octokit.paginate(octokit.rest.issues.listForRepo, {
+        ...context.repo,
+        state: 'open',
+        per_page: 100
+      })
+
+      core.info(`Total issues open: ${issuesOpen.length}`)
+    }
+
+    // Disk Alert
+    if (diskAlertLevel) {
+      core.info(
+        `Checking for issues to close/open related to disk space with Disk usage level at (${diskAlertLevel}) or higher...`
+      )
+    }
     // Issue closing
     if (autoCloseIssue) {
       core.info('Checking for issues to close...')
-      const issuesOpen = await octokit.paginate(
-        octokit.rest.issues.listForRepo,
-        {
-          ...context.repo,
-          state: 'open',
-          per_page: 100
-        }
-      )
-
-      core.info(`Total issues open: ${issuesOpen.length}`)
       if (issuesOpen.length) {
         for (const machine in newDatabaseState) {
           core.info(`Checking status for machine (${machine})...`)
@@ -253,8 +262,6 @@ async function run () {
             core.info(`Machine ${machine} is not online, skipping...`)
           }
         }
-      } else {
-        core.info('There are no issues open!')
       }
     }
 
