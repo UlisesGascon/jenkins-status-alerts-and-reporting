@@ -42,7 +42,7 @@ inputs:
     description: 'Automatically close the issue when the agent is up again'
     required: false
   report:
-    description: 'File that stores the report of Jekins nodes'
+    description: 'File that stores the report of Jenkins nodes'
     required: false
   auto-commit:
     description: 'Automatically commit the changes to the repository'
@@ -54,6 +54,9 @@ inputs:
     description: 'Automatically generate an issue if the node is offline and has not been previously recorded in the database'
     required: false
     default: 'true'
+  disk-alert-level:
+    description: 'The percentage of disk usage that will trigger an alert'
+    required: false
 outputs:
   computers:
     description: 'The list of Jenkins computers with all the details'
