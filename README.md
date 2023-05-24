@@ -94,6 +94,7 @@ jobs:
           issue-assignees: 'UlisesGascon'
           issue-labels: 'incident,machine-down'
           auto-close-issue: true
+          disk-alert-level: 90
           # Report
           report: experimental/jenkins-report.md
           report-tags-enabled: true
@@ -115,11 +116,13 @@ jobs:
 - `generate-issue`: Create an issue per machine that is down
 - `issue-assignees`: List of assignees for the issue
 - `issue-labels`: List of labels for the issue
+- `auto-close-issue`: Close the issue when the machine is back online
 - `github-token`: The token usage to create the issue and push the code
 - `report-tags-enabled`: Defines if the markdown report must be created/updated around tags by default is disabled. This is useful if the report is going to be include in a file that has other content on it, like docusaurus docs site or similar.
 - `report-start-tag`: Defines the start tag, default `<!-- JENKINS-REPORTING:START -->`
 - `report-end-tag` Defines the closing tag, default `<!-- JENKINS-REPORTING:END -->`
 - `create-issues-for-new-offline-nodes`: Automatically generate an issue if the node is offline and has not been previously recorded in the database
+- `disk-alert-level`: Disk usage level to generate an alert
 
 ### Outputs
 
