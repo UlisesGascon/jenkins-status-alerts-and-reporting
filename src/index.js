@@ -242,6 +242,7 @@ async function run () {
           newDatabaseState[machine].diskUsage >= diskAlertLevel &&
           !issueRelatedToMachine
         ) {
+          core.info(`Generating issue for machine (${machine})...`)
           await octokit.rest.issues.create({
             ...context.repo,
             title: `${newDatabaseState[machine].name} has low disk space`,
