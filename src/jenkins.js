@@ -1,6 +1,6 @@
 const core = require('@actions/core')
 const https = require('https')
-const { generateIssueBodyContent } = require('./utils')
+const { generateIssueDownBodyContent } = require('./utils')
 
 const getDiskUsageEmoji = diskUsage => {
   if (diskUsage < 60) {
@@ -75,7 +75,7 @@ const processJenkinsData = ({
       core.debug(`Creating issue for ${computer.displayName}...`)
       issuesData.push({
         title: `${computer.displayName} is DOWN`,
-        body: generateIssueBodyContent(computerExtendedData, jenkinsDomain)
+        body: generateIssueDownBodyContent(computerExtendedData, jenkinsDomain)
       })
     }
   })

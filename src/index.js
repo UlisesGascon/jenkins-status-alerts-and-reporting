@@ -8,7 +8,11 @@ const { updateOrCreateSegment } = require('@ulisesgascon/text-tags-manager')
 const { existsSync } = require('fs')
 const { readFile, writeFile, stat } = require('fs').promises
 
-const { validateDatabaseIntegrity, generateReportContent } = require('./utils')
+const {
+  validateDatabaseIntegrity,
+  generateReportContent,
+  generateIssueDiskSpaceBodyContent
+} = require('./utils')
 const { processJenkinsData, downloadCurrentState } = require('./jenkins')
 
 // most @actions toolkit packages have async methods
@@ -226,6 +230,52 @@ async function run () {
       core.info(
         `Checking for issues to close/open related to disk space with Disk usage level at (${diskAlertLevel}) or higher...`
       )
+      for (const machine in newDatabaseState) {
+        core.info(`Checking Disk alert for machine (${machine})...`)
+        const issueRelatedToMachine = issuesOpen.find(
+          issue =>
+            issue.title ===
+            `${newDatabaseState[machine].name} has low disk space`
+        )
+        // Open issue if disk usage is higher than the alert level
+        if (
+          newDatabaseState[machine].diskUsage >= diskAlertLevel &&
+          !issueRelatedToMachine
+        ) {
+          await octokit.rest.issues.create({
+            ...context.repo,
+            title: `${newDatabaseState[machine].name} has low disk space`,
+            body: generateIssueDiskSpaceBodyContent(
+              newDatabaseState[machine],
+              jenkinsDomain
+            ),
+            labels: issueLabels,
+            assignees: issueAssignees
+          })
+        }
+
+        // Close issue if disk usage is lower than the alert level
+        if (
+          newDatabaseState[machine].diskUsage < diskAlertLevel &&
+          issueRelatedToMachine
+        ) {
+          core.info(
+            `Closing issue ${issueRelatedToMachine.number} for machine (${machine})...`
+          )
+
+          await octokit.rest.issues.createComment({
+            ...context.repo,
+            issue_number: issueRelatedToMachine.number,
+            body: 'The machine has now enough disk space 🙌'
+          })
+
+          await octokit.rest.issues.update({
+            ...context.repo,
+            issue_number: issueRelatedToMachine.number,
+            state: 'closed'
+          })
+        }
+      }
     }
     // Issue closing
     if (autoCloseIssue) {

@@ -19424,7 +19424,7 @@ function wrappy (fn, cb) {
 
 const core = __nccwpck_require__(2186)
 const https = __nccwpck_require__(5687)
-const { generateIssueBodyContent } = __nccwpck_require__(1608)
+const { generateIssueDownBodyContent } = __nccwpck_require__(1608)
 
 const getDiskUsageEmoji = diskUsage => {
   if (diskUsage < 60) {
@@ -19499,7 +19499,7 @@ const processJenkinsData = ({
       core.debug(`Creating issue for ${computer.displayName}...`)
       issuesData.push({
         title: `${computer.displayName} is DOWN`,
-        body: generateIssueBodyContent(computerExtendedData, jenkinsDomain)
+        body: generateIssueDownBodyContent(computerExtendedData, jenkinsDomain)
       })
     }
   })
@@ -19555,10 +19555,15 @@ const { join } = __nccwpck_require__(1017)
 
 const ajv = new Ajv()
 const databaseSchema = __nccwpck_require__(5324)
-const issueTemplate = readFileSync(
-  __nccwpck_require__.ab + "issue.ejs",
+const issueDownTemplate = readFileSync(
+  __nccwpck_require__.ab + "issue_down.ejs",
   'utf8'
 )
+const issueDiskSpaceTemplate = readFileSync(
+  __nccwpck_require__.ab + "issue_disk_space.ejs",
+  'utf8'
+)
+
 const reportTemplate = readFileSync(
   __nccwpck_require__.ab + "report.ejs",
   'utf8'
@@ -19586,14 +19591,19 @@ const generateReportContent = ({
   })
 }
 
-const generateIssueBodyContent = (computer, jenkinsDomain) => {
-  return ejs.render(issueTemplate, { computer, jenkinsDomain })
+const generateIssueDownBodyContent = (computer, jenkinsDomain) => {
+  return ejs.render(issueDownTemplate, { computer, jenkinsDomain })
+}
+
+const generateIssueDiskSpaceBodyContent = (computer, jenkinsDomain) => {
+  return ejs.render(issueDiskSpaceTemplate, { computer, jenkinsDomain })
 }
 
 module.exports = {
   validateDatabaseIntegrity,
   generateReportContent,
-  generateIssueBodyContent
+  generateIssueDownBodyContent,
+  generateIssueDiskSpaceBodyContent
 }
 
 
@@ -19842,7 +19852,11 @@ const { updateOrCreateSegment } = __nccwpck_require__(7794)
 const { existsSync } = __nccwpck_require__(7147)
 const { readFile, writeFile, stat } = (__nccwpck_require__(7147).promises)
 
-const { validateDatabaseIntegrity, generateReportContent } = __nccwpck_require__(1608)
+const {
+  validateDatabaseIntegrity,
+  generateReportContent,
+  generateIssueDiskSpaceBodyContent
+} = __nccwpck_require__(1608)
 const { processJenkinsData, downloadCurrentState } = __nccwpck_require__(8280)
 
 // most @actions toolkit packages have async methods
@@ -20060,6 +20074,52 @@ async function run () {
       core.info(
         `Checking for issues to close/open related to disk space with Disk usage level at (${diskAlertLevel}) or higher...`
       )
+      for (const machine in newDatabaseState) {
+        core.info(`Checking Disk alert for machine (${machine})...`)
+        const issueRelatedToMachine = issuesOpen.find(
+          issue =>
+            issue.title ===
+            `${newDatabaseState[machine].name} has low disk space`
+        )
+        // Open issue if disk usage is higher than the alert level
+        if (
+          newDatabaseState[machine].diskUsage >= diskAlertLevel &&
+          !issueRelatedToMachine
+        ) {
+          await octokit.rest.issues.create({
+            ...context.repo,
+            title: `${newDatabaseState[machine].name} has low disk space`,
+            body: generateIssueDiskSpaceBodyContent(
+              newDatabaseState[machine],
+              jenkinsDomain
+            ),
+            labels: issueLabels,
+            assignees: issueAssignees
+          })
+        }
+
+        // Close issue if disk usage is lower than the alert level
+        if (
+          newDatabaseState[machine].diskUsage < diskAlertLevel &&
+          issueRelatedToMachine
+        ) {
+          core.info(
+            `Closing issue ${issueRelatedToMachine.number} for machine (${machine})...`
+          )
+
+          await octokit.rest.issues.createComment({
+            ...context.repo,
+            issue_number: issueRelatedToMachine.number,
+            body: 'The machine has now enough disk space 🙌'
+          })
+
+          await octokit.rest.issues.update({
+            ...context.repo,
+            issue_number: issueRelatedToMachine.number,
+            state: 'closed'
+          })
+        }
+      }
     }
     // Issue closing
     if (autoCloseIssue) {
