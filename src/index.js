@@ -177,8 +177,10 @@ async function run () {
     // @see: https://github.com/actions/checkout#push-a-commit-using-the-built-in-token
     if (autoCommit) {
       core.info('Committing changes to database and report')
-      await exec.exec('git config user.name github-actions')
-      await exec.exec('git config user.email github-actions@github.com')
+      await exec.exec('git config user.name github-actions[bot]')
+      await exec.exec(
+        'git config user.email github-actions[bot]@users.noreply.github.com'
+      )
       await exec.exec(`git add ${databasePath}`)
       await exec.exec(`git add ${reportPath}`)
       await exec.exec('git commit -m "Updated Jenkins Status"')
